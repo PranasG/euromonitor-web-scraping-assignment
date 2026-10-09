@@ -1,0 +1,31 @@
+Cellarbrations Whisky Category – Scraping Approach
+
+1. HTTP requests vs browser automation
+
+I tested the target website using Python's `requests` library. The website returned HTTP 403 responses because of Cloudflare protection, preventing reliable access to the product data through direct HTTP requests.
+
+I selected Playwright with Chromium to load the website and extract the rendered HTML.
+
+While I was testing, the browser required a one-time manual verification. This implementation is not fully unattended and it could require human intervention for verification if it appears again.
+
+2. Resource efficiency
+
+The scraper reuses a single Chromium browser instance and page while reviewing the category pages and not opening a new browser for every product.
+
+The category contains 57 products in two pages (30 and 27 products). Product names, IDs, URLs, prices, image URLs and descriptions were available directly in the category-page HTML.
+
+Because product descriptions were already embedded in the product cards, the scraper did not need to visit 57 individual product detail pages. This substantially reduced the number of page navigations.
+
+Product image URLs are extracted from HTML; downloading image files is not required.
+
+3. Pagination and data extraction
+
+Pagination uses the `page` and `skip` query parameters, with 30 products per page.
+
+BeautifulSoup parses the rendered HTML. Product records are identified using `data-testid` attributes and duplicate products are excluded by using their unique product ID.
+
+The scraper adds UTC scraping timestamps and extracts package quantities and measuring units from product names.
+
+4. Reliability and limitations
+
+The scraper waits for product cards to appear before extracting data. A page without product cards could indicate the end of pagination.Cloudflare verification remains an operational limitation. The implementation does not automatically bypass CAPTCHA challenges.
